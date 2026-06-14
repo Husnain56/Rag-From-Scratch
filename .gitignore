@@ -1,0 +1,44 @@
+# Environment variables
+.env
+.env.local
+
+# Go binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build output
+/bin/
+/dist/
+*.out
+
+# Go test cache
+*.test
+*.bench
+
+# Dependency directories
+vendor/
+
+# Go workspace
+go.work
+go.work.sum
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Qdrant local storage (if you run it in project folder)
+qdrant_storage/
+
+# Logs
+*.log
+logs/

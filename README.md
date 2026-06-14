@@ -49,13 +49,17 @@ rag-from-scratch/
 │   ├── index/        # CLI to ingest and index a document
 │   └── query/        # CLI to ask a question
 ├── internal/
+│   ├── loader/       # Reads files, returns Document struct
 │   ├── chunker/      # Text splitting logic
 │   ├── embedder/     # Calls embedding API
 │   ├── store/        # Qdrant client wrapper
 │   ├── retriever/    # Similarity search
 │   └── generator/    # Prompt builder + LLM call
 ├── docs/             # Sample documents to test with
+├── handwritten notes/            # Handwritten notes on RAG concepts
 ├── go.mod
+├── go.sum
+├── .gitignore
 └── README.md
 ```
 
