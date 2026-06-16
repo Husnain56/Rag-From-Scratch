@@ -8,8 +8,9 @@ import (
 )
 
 type Chunk struct {
-	Content  string
-	Metadata map[string]string
+	Content   string
+	Metadata  map[string]string
+	Embedding []float64
 }
 
 func ChunkDocument(doc loader.Document) []Chunk {
