@@ -3,6 +3,7 @@ package chunker
 import (
 	"fmt"
 	"strings"
+
 	"github.com/Husnain56/rag-from-scratch/internal/loader"
 )
 
