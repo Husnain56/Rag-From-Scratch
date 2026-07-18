@@ -14,10 +14,11 @@ func NewClient() (*qdrant.Client, error) {
 	apiKey := os.Getenv("Qdrant_API_KEY")
 
 	return qdrant.NewClient(&qdrant.Config{
-		Host:   endpoint,
-		Port:   6334,
-		APIKey: apiKey,
-		UseTLS: true,
+		Host:                   endpoint,
+		Port:                   6334,
+		APIKey:                 apiKey,
+		UseTLS:                 true,
+		SkipCompatibilityCheck: true,
 	})
 }
 
@@ -43,7 +44,7 @@ func CreateCollection(client *qdrant.Client, collectionName string, vectorSize u
 
 }
 
-func buildPoints(chunks []chunker.Chunk) ([]*qdrant.PointStruct, error) {
+func BuildPoints(chunks []chunker.Chunk) ([]*qdrant.PointStruct, error) {
 
 	points := make([]*qdrant.PointStruct, len(chunks))
 
@@ -58,15 +59,15 @@ func buildPoints(chunks []chunker.Chunk) ([]*qdrant.PointStruct, error) {
 			Id:      qdrant.NewIDNum(uint64(i)),
 			Vectors: qdrant.NewVectors(vec...),
 			Payload: qdrant.NewValueMap(map[string]any{
-				"content":  chunk.Content,
-				"metadata": chunk.Metadata,
+				"content": chunk.Content,
+				"source":  chunk.Metadata["source"],
 			}),
 		}
 	}
 	return points, nil
 }
 
-func addPointsToCollection(client *qdrant.Client, collectionName string, points []*qdrant.PointStruct) error {
+func AddPointsToCollection(client *qdrant.Client, collectionName string, points []*qdrant.PointStruct) error {
 
 	_, err := client.Upsert(context.Background(), &qdrant.UpsertPoints{
 		CollectionName: collectionName,

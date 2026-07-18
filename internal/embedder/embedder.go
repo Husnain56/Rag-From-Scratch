@@ -24,22 +24,29 @@ type EmbedResponse struct {
 
 func EmbedChunks(chunks []chunker.Chunk) ([]chunker.Chunk, error) {
 
-	for i := range chunks {
-		vector, err := EmbedText(chunks[i].Content)
-		if err != nil {
-			return nil, fmt.Errorf("embedding error: %w", err)
-		}
+	texts := make([]string, len(chunks))
 
-		chunks[i].Embedding = vector
+	for i := range chunks {
+		texts[i] = chunks[i].Content
+	}
+
+	embeddings, err := EmbedTexts(texts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range chunks {
+		chunks[i].Embedding = embeddings[i]
 	}
 	return chunks, nil
 }
 
-func EmbedText(text string) ([]float64, error) {
+func EmbedTexts(texts []string) ([][]float64, error) {
 
 	var request EmbedRequest
 
-	request.Input = append(request.Input, text)
+	request.Input = append(request.Input, texts...)
 	request.Model = "voyage-3-lite"
 
 	jsonData, err := json.Marshal(request)
@@ -86,10 +93,14 @@ func EmbedText(text string) ([]float64, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error parsing response: %w", err)
 	}
-
 	if len(result.Data) == 0 {
 		return nil, fmt.Errorf("no embedding returned")
 	}
-	return result.Data[0].Embedding, nil
+	embeddings := make([][]float64, len(result.Data))
+	for i, d := range result.Data {
+		embeddings[i] = d.Embedding
+	}
+
+	return embeddings, nil
 
 }

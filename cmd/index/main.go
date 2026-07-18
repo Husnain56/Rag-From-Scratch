@@ -6,6 +6,7 @@ import (
 	"github.com/Husnain56/rag-from-scratch/internal/chunker"
 	"github.com/Husnain56/rag-from-scratch/internal/embedder"
 	"github.com/Husnain56/rag-from-scratch/internal/loader"
+	"github.com/Husnain56/rag-from-scratch/internal/store"
 	"github.com/joho/godotenv"
 )
 
@@ -32,5 +33,29 @@ func main() {
 		fmt.Println("Error setting embeddings:", err)
 		return
 	}
+
+	qdrantClient, err := store.NewClient()
+	if err != nil {
+		fmt.Println("Error creating Qdrant client:", err)
+		return
+	}
+
+	points, err := store.BuildPoints(chunks)
+	if err != nil {
+		fmt.Println("Error building points:", err)
+		return
+	}
+	fmt.Printf("Total points: %d\n", len(points))
+	fmt.Printf("First point ID: %v\n", points[0].Id)
+	fmt.Printf("Vector size: %d\n", len(points[0].Vectors.GetVector().Data))
+
+	err = store.CreateCollection(qdrantClient, "my_collection", uint64(len(chunks[0].Embedding)))
+
+	err = store.AddPointsToCollection(qdrantClient, "my_collection", points)
+	if err != nil {
+		fmt.Println("Upsert error:", err)
+		return
+	}
+	fmt.Println("Points upserted successfully!")
 
 }
