@@ -13,8 +13,8 @@ func NewClient() (*qdrant.Client, error) {
 	apiKey := os.Getenv("Qdrant_API_KEY")
 
 	return qdrant.NewClient(&qdrant.Config{
-		Host:   endpoint, // e.g. "xxxx.cloud.qdrant.io"
-		Port:   6334,     // gRPC port, not 6333 (that's REST)
+		Host:   endpoint,
+		Port:   6334,
 		APIKey: apiKey,
 		UseTLS: true,
 	})
@@ -22,7 +22,7 @@ func NewClient() (*qdrant.Client, error) {
 
 func CreateCollection(client *qdrant.Client, collectionName string, vectorSize uint64) error {
 
-	exists, err := client.CollectionExists(context.Background(), "my_collection")
+	exists, err := client.CollectionExists(context.Background(), collectionName)
 
 	if err != nil {
 		return err
@@ -41,3 +41,5 @@ func CreateCollection(client *qdrant.Client, collectionName string, vectorSize u
 	})
 
 }
+
+

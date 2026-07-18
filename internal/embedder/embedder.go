@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/Husnain56/rag-from-scratch/internal/chunker"
 )
 
 type EmbedRequest struct {
@@ -18,6 +20,19 @@ type EmbedResponse struct {
 	Data []struct {
 		Embedding []float64 `json:"embedding"`
 	} `json:"data"`
+}
+
+func EmbedChunks(chunks []chunker.Chunk) ([]chunker.Chunk, error) {
+
+	for i := range chunks {
+		vector, err := EmbedText(chunks[i].Content)
+		if err != nil {
+			return nil, fmt.Errorf("embedding error: %w", err)
+		}
+
+		chunks[i].Embedding = vector
+	}
+	return chunks, nil
 }
 
 func EmbedText(text string) ([]float64, error) {

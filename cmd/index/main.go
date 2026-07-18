@@ -27,19 +27,10 @@ func main() {
 
 	fmt.Printf("Total chunks: %d\n", len(chunks))
 
-	// for _, chunk := range chunks {
-	// 	fmt.Printf("\n--- Chunk %s ---\n", chunk.Metadata["chunk_index"])
-	// 	fmt.Printf("%s\n", chunk.Content)
-	// }
-
-	vector, err := embedder.EmbedText(chunks[0].Content)
+	chunks, err = embedder.EmbedChunks(chunks)
 	if err != nil {
-		fmt.Println("Embedding error:", err)
+		fmt.Println("Error setting embeddings:", err)
 		return
 	}
-
-	fmt.Printf("Chunk text: %s\n", chunks[0].Content)
-	fmt.Printf("Vector length: %d\n", len(vector))
-	fmt.Printf("First 5 values: %v\n", vector[:5])
 
 }
