@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	"github.com/Husnain56/rag-from-scratch/internal/chunker"
 	"github.com/qdrant/go-client/qdrant"
 )
 
@@ -40,6 +41,29 @@ func CreateCollection(client *qdrant.Client, collectionName string, vectorSize u
 		}),
 	})
 
+}
+
+func buildPoints(chunks []chunker.Chunk) ([]*qdrant.PointStruct, error) {
+
+	points := make([]*qdrant.PointStruct, len(chunks))
+
+	for i, chunk := range chunks {
+
+		vec := make([]float32, len(chunk.Embedding))
+		for j, v := range chunk.Embedding {
+			vec[j] = float32(v)
+		}
+
+		points[i] = &qdrant.PointStruct{
+			Id:      qdrant.NewIDNum(uint64(i)),
+			Vectors: qdrant.NewVectors(vec...),
+			Payload: qdrant.NewValueMap(map[string]any{
+				"content":  chunk.Content,
+				"metadata": chunk.Metadata,
+			}),
+		}
+	}
+	return points, nil
 }
 
 func addPointsToCollection(client *qdrant.Client, collectionName string, points []*qdrant.PointStruct) error {
