@@ -42,4 +42,17 @@ func CreateCollection(client *qdrant.Client, collectionName string, vectorSize u
 
 }
 
+func addPointsToCollection(client *qdrant.Client, collectionName string, points []*qdrant.PointStruct) error {
 
+	_, err := client.Upsert(context.Background(), &qdrant.UpsertPoints{
+		CollectionName: collectionName,
+		Points:         points,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
