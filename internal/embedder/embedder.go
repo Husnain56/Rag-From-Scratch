@@ -42,6 +42,22 @@ func EmbedChunks(chunks []chunker.Chunk) ([]chunker.Chunk, error) {
 	return chunks, nil
 }
 
+func CreateSingleTextEmbedding(query string) ([]float64, error) {
+
+	texts := make([]string, 1)
+
+	texts[0] = query
+
+	embeddings, err := EmbedTexts(texts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return embeddings[0], nil
+
+}
+
 func EmbedTexts(texts []string) ([][]float64, error) {
 
 	var request EmbedRequest
