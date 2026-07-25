@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/Husnain56/rag-from-scratch/internal/chunker"
-	"github.com/Husnain56/rag-from-scratch/internal/embedder"
-	"github.com/Husnain56/rag-from-scratch/internal/loader"
+	"github.com/Husnain56/rag-from-scratch/internal/retriever"
 	"github.com/Husnain56/rag-from-scratch/internal/store"
 	"github.com/joho/godotenv"
 )
@@ -16,23 +14,23 @@ func main() {
 		fmt.Println("godotenv error:", err)
 	}
 
-	doc, err := loader.LoadDocument("docs/sample.txt")
-	if err != nil {
-		fmt.Printf("Error loading document: %v\n", err)
-		return
-	}
+	// doc, err := loader.LoadDocument("docs/sample.txt")
+	// if err != nil {
+	// 	fmt.Printf("Error loading document: %v\n", err)
+	// 	return
+	// }
 
-	fmt.Printf("Loaded document: %s\n", doc.Metadata["name"])
+	// fmt.Printf("Loaded document: %s\n", doc.Metadata["name"])
 
-	chunks := chunker.ChunkDocument(doc)
+	// chunks := chunker.ChunkDocument(doc)
 
-	fmt.Printf("Total chunks: %d\n", len(chunks))
+	// fmt.Printf("Total chunks: %d\n", len(chunks))
 
-	chunks, err = embedder.EmbedChunks(chunks)
-	if err != nil {
-		fmt.Println("Error setting embeddings:", err)
-		return
-	}
+	// chunks, err = embedder.EmbedChunks(chunks)
+	// if err != nil {
+	// 	fmt.Println("Error setting embeddings:", err)
+	// 	return
+	// }
 
 	qdrantClient, err := store.NewClient()
 	if err != nil {
@@ -40,22 +38,31 @@ func main() {
 		return
 	}
 
-	points, err := store.BuildPoints(chunks)
+	content, err := retriever.RetrieveRelevantContent("What is goLang?", 5, qdrantClient, "my_collection")
 	if err != nil {
-		fmt.Println("Error building points:", err)
+		fmt.Println("Error retrieving relevant content:", err)
 		return
 	}
-	fmt.Printf("Total points: %d\n", len(points))
-	fmt.Printf("First point ID: %v\n", points[0].Id)
-	fmt.Printf("Vector size: %d\n", len(points[0].Vectors.GetVector().Data))
-
-	err = store.CreateCollection(qdrantClient, "my_collection", uint64(len(chunks[0].Embedding)))
-
-	err = store.AddPointsToCollection(qdrantClient, "my_collection", points)
-	if err != nil {
-		fmt.Println("Upsert error:", err)
-		return
+	for i, c := range content {
+		fmt.Printf("Chunk %d: %s\n\n", i, c)
 	}
-	fmt.Println("Points upserted successfully!")
+
+	// points, err := store.BuildPoints(chunks)
+	// if err != nil {
+	// 	fmt.Println("Error building points:", err)
+	// 	return
+	// }
+	// fmt.Printf("Total points: %d\n", len(points))
+	// fmt.Printf("First point ID: %v\n", points[0].Id)
+	// fmt.Printf("Vector size: %d\n", len(points[0].Vectors.GetVector().Data))
+
+	// err = store.CreateCollection(qdrantClient, "my_collection", uint64(len(chunks[0].Embedding)))
+
+	// err = store.AddPointsToCollection(qdrantClient, "my_collection", points)
+	// if err != nil {
+	// 	fmt.Println("Upsert error:", err)
+	// 	return
+	// }
+	// fmt.Println("Points upserted successfully!")
 
 }
