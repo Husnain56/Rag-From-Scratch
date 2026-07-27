@@ -10,12 +10,12 @@ import (
 	"strings"
 )
 
-type DeepSeekRequest struct {
+type GroqRequest struct {
 	Model    string    `json:"model"`
 	Messages []Message `json:"messages"`
 }
 
-type DeepSeekResponse struct {
+type GroqResponse struct {
 	Choices []struct {
 		Message struct {
 			Content string `json:"content"`
@@ -44,15 +44,15 @@ func BuildPrompt(query string, content []string) string {
 
 func GenerateResponse(prompt string) (string, error) {
 
-	apiUrl := os.Getenv("DeepSeek_API_URL")
-	apiKey := os.Getenv("DeepSeek_API_KEY")
+	apiUrl := os.Getenv("GROQ_API_URL")
+	apiKey := os.Getenv("GROQ_API_KEY")
 
 	if apiKey == "" {
-		return "", fmt.Errorf("Error: VoyageAI_API_KEY environment variable is not set")
+		return "", fmt.Errorf("Error: GROQ_API_KEY environment variable is not set")
 	}
 
-	request := DeepSeekRequest{
-		Model: "deepseek-chat",
+	request := GroqRequest{
+		Model: "llama-3.1-8b-instant",
 		Messages: []Message{
 			{
 				Role:    "user",
@@ -92,8 +92,8 @@ func GenerateResponse(prompt string) (string, error) {
 		return "", fmt.Errorf("error reading response: %w", err)
 	}
 
-	var result DeepSeekResponse
-
+	var result GroqResponse
+	fmt.Printf("Raw response: %s\n", string(body))
 	err = json.Unmarshal(body, &result)
 
 	if err != nil {

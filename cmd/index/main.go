@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/Husnain56/rag-from-scratch/internal/generator"
 	"github.com/Husnain56/rag-from-scratch/internal/retriever"
 	"github.com/Husnain56/rag-from-scratch/internal/store"
 	"github.com/joho/godotenv"
@@ -43,9 +44,16 @@ func main() {
 		fmt.Println("Error retrieving relevant content:", err)
 		return
 	}
-	for i, c := range content {
-		fmt.Printf("Chunk %d: %s\n\n", i, c)
-	}
+
+	fmt.Printf("%s", content[0])
+
+	query := "What is GoLang?"
+
+	prompt := generator.BuildPrompt(query, content)
+
+	response, err := generator.GenerateResponse(prompt)
+
+	fmt.Printf("%s", response)
 
 	// points, err := store.BuildPoints(chunks)
 	// if err != nil {
